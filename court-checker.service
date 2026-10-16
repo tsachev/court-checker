@@ -1,0 +1,10 @@
+[Unit]
+Description=Check SRS court case 62325/2023 for new documents
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/.local/bin/court-checker
+ExecStart=/usr/bin/clojure -M src/checker.clj 62325/2023
+TimeoutStartSec=120
