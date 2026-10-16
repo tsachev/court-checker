@@ -52,6 +52,19 @@ clojure -M:run 62325/2023
 
 Without a valid argument it prints a usage message and exits with code 2.
 
+### REPL
+
+Start a REPL with `clojure` (or `clj`), then:
+
+```clojure
+(require 'checker)
+(checker/run-check "62325/2023" (checker/parse-case "62325/2023"))
+(checker/parse-case "62325/2023")   ;=> {:number "62325", :year "2023"}
+```
+
+Loading the namespace has no side effects; only `checker/-main` (used by
+`clojure -M:run`) shuts down the agent thread pool and exits.
+
 ## Install as a systemd user timer
 
 Edit the case number in `systemd/court-checker.service` (`ExecStart` line), then:

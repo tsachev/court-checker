@@ -202,10 +202,8 @@
   (let [case-id (some-> (first args) str/trim)
         case-map (parse-case case-id)]
     (when-not case-map
-      (println "Usage: checker.clj <number>/<year>   e.g. 62325/2023")
+      (println "Usage: clojure -M:run <number>/<year>   e.g. 62325/2023")
       (shutdown-agents)
       (System/exit 2))
-    (run-check case-id case-map)))
-
-(apply -main *command-line-args*)
-(shutdown-agents)
+    (run-check case-id case-map)
+    (shutdown-agents)))
