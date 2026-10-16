@@ -1,5 +1,5 @@
 [Unit]
-Description=Run court-checker periodically
+Description=Run court-checker for case @CASE_ID@ periodically
 
 [Timer]
 OnBootSec=2min

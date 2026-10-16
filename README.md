@@ -35,7 +35,7 @@ is replaced by `-`):
 The base directory defaults to `~/.local/share/court-checker` and can be changed
 with the `COURT_CHECKER_DIR` environment variable (e.g. `/var/lib/court-checker`,
 which must be writable by the user running the script; for the systemd user
-service add `Environment=COURT_CHECKER_DIR=...` to `systemd/court-checker.service`).
+service add `Environment=COURT_CHECKER_DIR=...` to `systemd/court-checker.service.in` and re-run the installer).
 
 ## Requirements
 
@@ -68,28 +68,32 @@ argument) and shuts down the agent thread pool.
 
 ## Install as a systemd user timer
 
-Edit the case number in `systemd/court-checker.service` (`ExecStart` line), then:
+Clone the repository anywhere (for example `~/src/court-checker`) and run the
+installer from there, passing the case id:
 
 ```
-mkdir -p ~/.config/systemd/user
-cp systemd/* ~/.config/systemd/user/
-systemctl --user daemon-reload
-systemctl --user enable --now court-checker.timer
+systemd/install.sh 62325/2023
 ```
+
+It renders the `systemd/*.in` templates using the folder the repository lives
+in, the `clojure` found on `PATH` and the case id, writes
+`court-checker-<number>-<year>.service` and `.timer` to
+`~/.config/systemd/user/` (or `$XDG_CONFIG_HOME/systemd/user/`), then reloads
+systemd and enables the timer. Run it once per case to watch several cases.
+
+Use `systemd/install.sh --dry-run 62325/2023` to preview the generated units and
+`systemd/install.sh --uninstall 62325/2023` to remove them. If you move the
+repository, run the installer again.
 
 The timer runs 2 minutes after login and then every hour
-(`OnUnitActiveSec` in `systemd/court-checker.timer`).
+(`OnUnitActiveSec` in `systemd/court-checker.timer.in`).
 
-The service uses `%h/.local/bin/court-checker` as its working directory;
-adjust it if the project lives elsewhere.
-
-Useful commands:
+Useful commands (unit name is `court-checker-<number>-<year>`):
 
 ```
-systemctl --user list-timers court-checker.timer
-systemctl --user start court-checker.service     # run once now
-journalctl --user -u court-checker                # view output
-systemctl --user disable --now court-checker.timer
+systemctl --user list-timers 'court-checker-*'
+systemctl --user start court-checker-62325-2023.service   # run once now
+journalctl --user -u court-checker-62325-2023              # view output
 ```
 
 ## License

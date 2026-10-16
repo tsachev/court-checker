@@ -1,0 +1,10 @@
+[Unit]
+Description=Check SRS court case @CASE_ID@ for new documents
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=@APP_DIR@
+ExecStart=@CLOJURE@ -M:run @CASE_ID@
+TimeoutStartSec=120
