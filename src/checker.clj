@@ -27,9 +27,7 @@
   (io/file (data-dir) (str number "-" year)))
 
 (defn die [msg]
-  (println "❌" msg)
-  (shutdown-agents)
-  (System/exit 1))
+  (throw (ex-info msg {:type ::fatal})))
 
 (defn send-notification [summary message urgency]
   (try
@@ -168,13 +166,13 @@
     (println "==========================================")
     (println (str "🕒 [" (java.time.LocalDateTime/now) "] Checking case " case-id))
     (println "📁 Case folder:" (str dir))
-    (.mkdirs dir)
     (let [prev (read-state state-file)
           old-acts (:acts prev)
           acts (parse-court-acts url (fetch-html-nodes url))]
       (when (empty? acts)
         (die "No acts found - page layout may have changed. State left untouched."))
       (println "📊 Acts on page:" (count acts))
+      (.mkdirs dir)
       (let [changes (diff-acts old-acts acts)
             acts (sync-files dir old-acts acts)]
         (write-state! state-file {:case case-id
@@ -200,10 +198,19 @@
 
 (defn -main [& args]
   (let [case-id (some-> (first args) str/trim)
-        case-map (parse-case case-id)]
-    (when-not case-map
-      (println "Usage: clojure -M:run <number>/<year>   e.g. 62325/2023")
-      (shutdown-agents)
-      (System/exit 2))
-    (run-check case-id case-map)
-    (shutdown-agents)))
+        case-map (parse-case case-id)
+        code (cond
+               (nil? case-map)
+               (do (println "Usage: clojure -M:run <number>/<year>   e.g. 62325/2023")
+                   2)
+
+               :else
+               (try
+                 (run-check case-id case-map)
+                 0
+                 (catch clojure.lang.ExceptionInfo e
+                   (println "❌" (ex-message e))
+                   1)))]
+    (shutdown-agents)
+    (when (pos? code)
+      (System/exit code))))

@@ -62,8 +62,10 @@ Start a REPL with `clojure` (or `clj`), then:
 (checker/parse-case "62325/2023")   ;=> {:number "62325", :year "2023"}
 ```
 
-Loading the namespace has no side effects; only `checker/-main` (used by
-`clojure -M:run`) shuts down the agent thread pool and exits.
+Loading the namespace has no side effects, and `run-check` throws an
+`ex-info` on fatal errors (it never calls `System/exit`). Only `checker/-main`
+(used by `clojure -M:run`) turns errors into exit codes (1 = error, 2 = bad
+argument) and shuts down the agent thread pool.
 
 ## Install as a systemd user timer
 
