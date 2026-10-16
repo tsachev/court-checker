@@ -1,7 +1,9 @@
 # court-checker
 
-A Clojure script that watches a case on the Bulgarian court docket site (`srs.justice.bg`)
-and sends a desktop notification when new documents appear.
+A Clojure script that watches a case on the Sofia District Court website
+(`srs.justice.bg`, "Справки по дела") and sends a desktop notification when new
+documents appear. The court's case-search page is hard-coded in `build-url`, so
+it only works for cases of that court.
 
 ## How it works
 
@@ -61,7 +63,7 @@ systemctl --user daemon-reload
 systemctl --user enable --now court-checker.timer
 ```
 
-The timer runs 2 minutes after login and then every 30 minutes
+The timer runs 2 minutes after login and then every hour
 (`OnUnitActiveSec` in `court-checker.timer`).
 
 The service uses `%h/.local/bin/court-checker` as its working directory;
