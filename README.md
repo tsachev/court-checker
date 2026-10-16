@@ -46,7 +46,6 @@ service add `Environment=COURT_CHECKER_DIR=...` to `systemd/court-checker.servic
 ## Usage
 
 ```
-clojure -M:run <number>/<year>
 clojure -M:run 62325/2023
 ```
 
@@ -76,7 +75,7 @@ systemd/install.sh 62325/2023
 ```
 
 It renders the `systemd/*.in` templates using the folder the repository lives
-in, the `clojure` found on `PATH` and the case id, writes
+in (written as `%h/...` when it is under your home folder), the `clojure` found on `PATH` and the case id, writes
 `court-checker-<number>-<year>.service` and `.timer` to
 `~/.config/systemd/user/` (or `$XDG_CONFIG_HOME/systemd/user/`), then reloads
 systemd and enables the timer. Run it once per case to watch several cases.

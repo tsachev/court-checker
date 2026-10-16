@@ -20,6 +20,8 @@ unit="court-checker-${BASH_REMATCH[1]}-${BASH_REMATCH[2]}"
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 app_dir=$(dirname "$here")
+# keep units portable: use systemd's %h specifier for paths under $HOME
+unit_app_dir=${app_dir/#"$HOME"\//%h/}
 dest="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 
 if [[ $mode == uninstall ]]; then
@@ -34,7 +36,7 @@ clojure_bin=$(command -v clojure) || { echo "clojure not found on PATH" >&2; exi
 
 render() {
   sed -e "s|@CASE_ID@|$case_id|g" \
-      -e "s|@APP_DIR@|$app_dir|g" \
+      -e "s|@APP_DIR@|$unit_app_dir|g" \
       -e "s|@CLOJURE@|$clojure_bin|g" "$1"
 }
 
