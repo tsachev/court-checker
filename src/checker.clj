@@ -19,7 +19,7 @@
        "&caseyear=" year "&casetype="))
 
 ;; The case id contains a slash, so the folder uses <number>-<year>.
-(defn data-dir []
+(defn- data-dir []
   (io/file (or (System/getenv "COURT_CHECKER_DIR")
                (str (System/getProperty "user.home") "/.local/share/court-checker"))))
 
@@ -100,7 +100,7 @@
       (when (str/includes? (str (get-in resp [:headers "Content-Type"])) "pdf") "pdf")
       "bin"))
 
-(defn download! [dir base-name url]
+(defn- download! [dir base-name url]
   (try
     (let [resp (http/get url {:as :byte-array :connection-timeout 10000 :socket-timeout 60000})
           fname (str base-name "." (extension resp))
