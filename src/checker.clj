@@ -159,8 +159,13 @@
 
 ;; ---------- main ----------
 
-(defn run-check [case-id case-map]
-  (let [url (build-url case-map)
+(defn run-check [case-id]
+  (let [case-id (some-> case-id str/trim)
+        case-map (or (parse-case case-id)
+                     (throw (ex-info (str "Invalid case id " (pr-str case-id)
+                                          ". Usage: clojure -M:run <number>/<year>   e.g. 62325/2023")
+                                     {:exit 2})))
+        url (build-url case-map)
         dir (case-dir case-map)
         state-file (io/file dir "acts.edn")]
     (println "==========================================")
@@ -197,20 +202,12 @@
       (println "=========================================="))))
 
 (defn -main [& args]
-  (let [case-id (some-> (first args) str/trim)
-        case-map (parse-case case-id)
-        code (cond
-               (nil? case-map)
-               (do (println "Usage: clojure -M:run <number>/<year>   e.g. 62325/2023")
-                   2)
-
-               :else
-               (try
-                 (run-check case-id case-map)
-                 0
-                 (catch clojure.lang.ExceptionInfo e
-                   (println "❌" (ex-message e))
-                   1)))]
+  (let [code (try
+               (run-check (first args))
+               0
+               (catch clojure.lang.ExceptionInfo e
+                 (println "❌" (ex-message e))
+                 (:exit (ex-data e) 1)))]
     (shutdown-agents)
     (when (pos? code)
       (System/exit code))))

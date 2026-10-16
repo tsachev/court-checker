@@ -58,7 +58,7 @@ Start a REPL with `clojure` (or `clj`), then:
 
 ```clojure
 (require 'checker)
-(checker/run-check "62325/2023" (checker/parse-case "62325/2023"))
+(checker/run-check "62325/2023")
 (checker/parse-case "62325/2023")   ;=> {:number "62325", :year "2023"}
 ```
 
