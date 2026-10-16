@@ -77,3 +77,7 @@ systemctl --user start court-checker.service     # run once now
 journalctl --user -u court-checker                # view output
 systemctl --user disable --now court-checker.timer
 ```
+
+## License
+
+[MIT](LICENSE)
