@@ -57,10 +57,13 @@ Start a REPL with `clojure` (or `clj`), then:
 
 ```clojure
 (require 'checker)
-(checker/run-check "62325/2023")
+(def c (checker/parse-case-id "62325/2023"))   ;=> {:id "62325/2023", :number "62325", :year "2023"}
+(checker/case-dir c)                            ;; folder with saved acts and downloads
+(checker/run-check c)
 ```
 
-Loading the namespace has no side effects, and `run-check` throws an
+All public functions work with the parsed id returned by `parse-case-id`.
+Loading the namespace has no side effects, and `parse-case-id` / `run-check` throw an
 `ex-info` on fatal errors (it never calls `System/exit`). Only `checker/-main`
 (used by `clojure -M:run`) turns errors into exit codes (1 = error, 2 = bad
 argument) and shuts down the agent thread pool.

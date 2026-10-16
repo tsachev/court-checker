@@ -10,9 +10,15 @@
   (:import (java.nio.file Files StandardCopyOption))
   (:gen-class))
 
-(defn- parse-case [case-id]
-  (when-let [[_ number year] (and case-id (re-matches #"(\d+)/(\d{4})" (str/trim case-id)))]
-    {:number number :year year}))
+(defn parse-case-id
+  "Parses \"<number>/<year>\" into {:id \"62325/2023\" :number \"62325\" :year \"2023\"}.
+  Throws ex-info (exit code 2) if the id is malformed."
+  [case-id]
+  (if-let [[_ number year] (some->> case-id str/trim (re-matches #"(\d+)/(\d{4})"))]
+    {:id (str number "/" year) :number number :year year}
+    (throw (ex-info (str "Invalid case id " (pr-str case-id)
+                         ". Usage: clojure -M:run <number>/<year>   e.g. 62325/2023")
+                    {:exit 2}))))
 
 (defn- build-url [{:keys [number year]}]
   (str "https://srs.justice.bg/bg/12685?from=&to=&actkindcode=&casenumber=" number
@@ -159,14 +165,11 @@
 
 ;; ---------- main ----------
 
-(defn run-check [case-id]
-  (let [case-id (some-> case-id str/trim)
-        case-map (or (parse-case case-id)
-                     (throw (ex-info (str "Invalid case id " (pr-str case-id)
-                                          ". Usage: clojure -M:run <number>/<year>   e.g. 62325/2023")
-                                     {:exit 2})))
-        url (build-url case-map)
-        dir (case-dir case-map)
+(defn run-check
+  "Checks one case. `case` is the result of `parse-case-id`."
+  [{case-id :id :as case}]
+  (let [url (build-url case)
+        dir (case-dir case)
         state-file (io/file dir "acts.edn")]
     (println "==========================================")
     (println (str "🕒 [" (java.time.LocalDateTime/now) "] Checking case " case-id))
@@ -203,7 +206,7 @@
 
 (defn -main [& args]
   (let [code (try
-               (run-check (first args))
+               (run-check (parse-case-id (first args)))
                0
                (catch clojure.lang.ExceptionInfo e
                  (println "❌" (ex-message e))
