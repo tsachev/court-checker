@@ -44,8 +44,8 @@ service add `Environment=COURT_CHECKER_DIR=...` to `court-checker.service`).
 ## Usage
 
 ```
-clojure -M src/checker.clj <number>/<year>
-clojure -M src/checker.clj 62325/2023
+clojure -M:run <number>/<year>
+clojure -M:run 62325/2023
 ```
 
 Without a valid argument it prints a usage message and exits with code 2.

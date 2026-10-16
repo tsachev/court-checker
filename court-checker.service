@@ -6,5 +6,5 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 WorkingDirectory=%h/.local/bin/court-checker
-ExecStart=/usr/bin/clojure -M src/checker.clj 62325/2023
+ExecStart=/usr/bin/clojure -M:run 62325/2023
 TimeoutStartSec=120
