@@ -35,7 +35,7 @@ is replaced by `-`):
 The base directory defaults to `~/.local/share/court-checker` and can be changed
 with the `COURT_CHECKER_DIR` environment variable (e.g. `/var/lib/court-checker`,
 which must be writable by the user running the script; for the systemd user
-service add `Environment=COURT_CHECKER_DIR=...` to `court-checker.service`).
+service add `Environment=COURT_CHECKER_DIR=...` to `systemd/court-checker.service`).
 
 ## Requirements
 
@@ -54,17 +54,17 @@ Without a valid argument it prints a usage message and exits with code 2.
 
 ## Install as a systemd user timer
 
-Edit the case number in `court-checker.service` (`ExecStart` line), then:
+Edit the case number in `systemd/court-checker.service` (`ExecStart` line), then:
 
 ```
 mkdir -p ~/.config/systemd/user
-cp court-checker.service court-checker.timer ~/.config/systemd/user/
+cp systemd/* ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now court-checker.timer
 ```
 
 The timer runs 2 minutes after login and then every hour
-(`OnUnitActiveSec` in `court-checker.timer`).
+(`OnUnitActiveSec` in `systemd/court-checker.timer`).
 
 The service uses `%h/.local/bin/court-checker` as its working directory;
 adjust it if the project lives elsewhere.
