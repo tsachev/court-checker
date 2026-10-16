@@ -10,11 +10,11 @@
   (:import (java.nio.file Files StandardCopyOption))
   (:gen-class))
 
-(defn parse-case [case-id]
+(defn- parse-case [case-id]
   (when-let [[_ number year] (and case-id (re-matches #"(\d+)/(\d{4})" (str/trim case-id)))]
     {:number number :year year}))
 
-(defn build-url [{:keys [number year]}]
+(defn- build-url [{:keys [number year]}]
   (str "https://srs.justice.bg/bg/12685?from=&to=&actkindcode=&casenumber=" number
        "&caseyear=" year "&casetype="))
 

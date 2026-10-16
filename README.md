@@ -59,7 +59,6 @@ Start a REPL with `clojure` (or `clj`), then:
 ```clojure
 (require 'checker)
 (checker/run-check "62325/2023")
-(checker/parse-case "62325/2023")   ;=> {:number "62325", :year "2023"}
 ```
 
 Loading the namespace has no side effects, and `run-check` throws an
